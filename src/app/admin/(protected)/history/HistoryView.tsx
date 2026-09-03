@@ -75,7 +75,7 @@ export default function HistoryView({ orders }: { orders: OrderRow[] }) {
         <h1 className="font-display font-semibold text-lg">Sipariş Geçmişi</h1>
         <button
           onClick={() => downloadCsv(filtered)}
-          className="bg-gold text-white text-sm font-semibold rounded-lg px-3 py-2"
+          className="bg-wine text-white text-sm font-semibold rounded-lg px-3 py-2"
         >
           CSV İndir
         </button>

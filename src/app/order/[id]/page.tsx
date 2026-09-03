@@ -54,7 +54,7 @@ export default function OrderStatusPage({ params }: { params: { id: string } }) 
               className="flex items-center gap-3 py-3 border-b border-ink/12 last:border-0"
             >
               <span
-                className={`w-2 h-2 rounded-full shrink-0 ${reached ? "bg-gold" : "bg-ink/20"}`}
+                className={`w-2 h-2 rounded-full shrink-0 ${reached ? "bg-wine" : "bg-ink/20"}`}
               />
               <span
                 className={`font-display text-[16px] ${reached ? "text-ink" : "text-ink/35"}`}

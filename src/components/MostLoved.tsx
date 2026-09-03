@@ -3,6 +3,7 @@
 import { useLanguage } from "@/context/LanguageContext";
 import { useCart } from "@/context/CartContext";
 import HatMark from "@/components/HatMark";
+import ScallopDivider from "@/components/ScallopDivider";
 
 interface MostLovedItem {
   product_id: string;
@@ -45,7 +46,9 @@ export default function MostLoved({ items }: { items: MostLovedItem[] }) {
           </button>
         ))}
       </div>
-      <div className="h-px bg-gold/50 mt-4" />
+      <div className="mt-4">
+        <ScallopDivider />
+      </div>
     </section>
   );
 }

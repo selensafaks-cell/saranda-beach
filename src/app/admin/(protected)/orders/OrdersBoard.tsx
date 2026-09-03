@@ -131,7 +131,7 @@ export default function OrdersBoard() {
                     {action && (
                       <button
                         onClick={() => handleAdvance(order)}
-                        className="mt-3 w-full bg-gold text-white rounded-xl py-2.5 font-semibold text-sm"
+                        className="mt-3 w-full bg-wine text-white rounded-xl py-2.5 font-semibold text-sm"
                       >
                         {action.label}
                       </button>

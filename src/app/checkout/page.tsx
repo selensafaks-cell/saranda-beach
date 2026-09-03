@@ -176,7 +176,7 @@ export default function CheckoutPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="fixed bottom-4 left-5 right-5 bg-paper border border-gold text-deep font-display text-[15px] tracking-[0.1em] uppercase rounded py-4 disabled:opacity-60"
+          className="fixed bottom-4 left-5 right-5 bg-paper border border-wine text-deep font-display text-[15px] tracking-[0.1em] uppercase rounded py-4 disabled:opacity-60"
         >
           {submitting ? "..." : `${t.placeOrder} · ${total} ₺`}
         </button>

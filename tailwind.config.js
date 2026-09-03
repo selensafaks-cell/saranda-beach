@@ -4,17 +4,18 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        // Grounded in the actual place: Aegean coast, whitewashed walls, sunset light.
-        aegean: "#0E6E8C",   // marine blue - primary
-        horizon: "#0B3B4A",  // deep navy - headers, admin chrome
-        sand: "#FAF6EC",     // pale sandstone background
-        coral: "#FF6B4A",    // sunset coral - CTAs, prices, accents
-        olive: "#78895A",    // olive grove - secondary tags
-        ink: "#1B2422"       // warm near-black for text
+        // Turan's signature red as the lead color, gold as its accent.
+        paper: "#F3F2F2",   // cream background
+        surf: "#EAE9E9",    // deeper surface
+        ink: "#201F1D",     // near-black text
+        wine: "#7A2530",    // primary - Turan's signature red
+        deep: "#4F1620",    // darker red - emphasis, hover
+        gold: "#B68235",    // accent only - details, the hatband, small marks
+        sage: "#8CA37E"     // illustration-only accent
       },
       fontFamily: {
         display: ["var(--font-display)", "serif"],
-        body: ["var(--font-body)", "sans-serif"]
+        body: ["var(--font-body)", "serif"]
       }
     }
   },

@@ -25,28 +25,35 @@ export default function ProductCard({ product }: { product: Product }) {
     <button
       onClick={handleAdd}
       disabled={product.sold_out}
-      className="w-full flex items-start justify-between gap-4 py-4 border-b border-ink/12 text-left disabled:opacity-50"
+      className="w-full flex items-start gap-3 py-4 border-b border-ink/12 text-left disabled:opacity-50"
     >
-      <div className="flex-1 min-w-0">
-        <p className="font-display text-[19px] font-semibold leading-snug">{name}</p>
-        {description && (
-          <p className="font-body text-[12px] italic text-ink/50 mt-0.5">{description}</p>
-        )}
-        {product.includes_fries && (
-          <p className="font-body text-[11px] italic text-ink/40 mt-0.5">{t.friesIncluded}</p>
-        )}
-      </div>
-      <div className="shrink-0 text-right pt-0.5 flex items-center gap-2">
-        {product.sold_out ? (
-          <span className="font-body text-[12px] italic text-ink/40">{t.soldOut}</span>
-        ) : (
-          <>
-            <span className="font-display text-[18px] text-deep tabular-nums">{product.price} ₺</span>
-            <span className="w-6 h-6 flex items-center justify-center border border-gold rounded-full text-gold text-[14px] leading-none">
-              +
-            </span>
-          </>
-        )}
+      {product.image_url && (
+        <div className="w-14 h-14 shrink-0 rounded overflow-hidden bg-surf">
+          <img src={product.image_url} alt={name} className="w-full h-full object-cover" />
+        </div>
+      )}
+      <div className="flex-1 min-w-0 flex items-start justify-between gap-4">
+        <div className="flex-1 min-w-0">
+          <p className="font-display text-[19px] font-semibold leading-snug">{name}</p>
+          {description && (
+            <p className="font-body text-[12px] italic text-ink/50 mt-0.5">{description}</p>
+          )}
+          {product.includes_fries && (
+            <p className="font-body text-[11px] italic text-ink/40 mt-0.5">{t.friesIncluded}</p>
+          )}
+        </div>
+        <div className="shrink-0 text-right pt-0.5 flex items-center gap-2">
+          {product.sold_out ? (
+            <span className="font-body text-[12px] italic text-ink/40">{t.soldOut}</span>
+          ) : (
+            <>
+              <span className="font-display text-[18px] text-wine tabular-nums">{product.price} ₺</span>
+              <span className="w-6 h-6 flex items-center justify-center border border-gold rounded-full text-gold text-[14px] leading-none">
+                +
+              </span>
+            </>
+          )}
+        </div>
       </div>
     </button>
   );

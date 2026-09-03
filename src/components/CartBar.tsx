@@ -21,7 +21,7 @@ export default function CartBar() {
       </div>
       <button
         onClick={() => router.push("/checkout")}
-        className="font-display text-[15px] tracking-[0.1em] uppercase text-gold border border-gold rounded px-6 py-3"
+        className="font-display text-[15px] tracking-[0.1em] uppercase text-wine border border-wine rounded px-6 py-3"
       >
         {t.viewCart}
       </button>

@@ -63,3 +63,39 @@ export async function deleteProduct(productId: string) {
   if (error) return { error: error.message };
   return { success: true };
 }
+
+export async function uploadProductImage(productId: string, formData: FormData) {
+  const supabase = createClient();
+  const file = formData.get("file") as File | null;
+  if (!file || file.size === 0) return { error: "NO_FILE" };
+  if (file.size > 4 * 1024 * 1024) return { error: "FILE_TOO_LARGE" };
+
+  const ext = file.name.split(".").pop() || "jpg";
+  const path = `${productId}-${Date.now()}.${ext}`;
+
+  const { error: uploadError } = await supabase.storage
+    .from("product-images")
+    .upload(path, file, { upsert: true, contentType: file.type });
+  if (uploadError) return { error: uploadError.message };
+
+  const { data: publicUrlData } = supabase.storage.from("product-images").getPublicUrl(path);
+
+  const { error: updateError } = await supabase
+    .from("products")
+    .update({ image_url: publicUrlData.publicUrl })
+    .eq("id", productId);
+  if (updateError) return { error: updateError.message };
+
+  revalidatePath("/admin/menu");
+  revalidatePath("/");
+  return { success: true, url: publicUrlData.publicUrl };
+}
+
+export async function removeProductImage(productId: string) {
+  const supabase = createClient();
+  const { error } = await supabase.from("products").update({ image_url: null }).eq("id", productId);
+  revalidatePath("/admin/menu");
+  revalidatePath("/");
+  if (error) return { error: error.message };
+  return { success: true };
+}

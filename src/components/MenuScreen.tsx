@@ -9,7 +9,7 @@ import ProductCard from "@/components/ProductCard";
 import MostLoved from "@/components/MostLoved";
 import CartBar from "@/components/CartBar";
 import QrLocationCapture from "@/components/QrLocationCapture";
-import HatMark from "@/components/HatMark";
+import ScallopDivider from "@/components/ScallopDivider";
 
 interface MostLovedItem {
   product_id: string;
@@ -53,25 +53,32 @@ export default function MenuScreen({
     document.getElementById(`cat-${id}`)?.scrollIntoView({ behavior: "smooth", block: "start" });
   }
 
+  const activeCategory = categories.find((c) => c.id === activeId);
+
   return (
     <div className="min-h-screen pb-32">
       <QrLocationCapture />
 
-      <header className="sticky top-0 z-30 bg-paper/95 backdrop-blur">
-        <div className="flex items-center gap-3 px-5 pt-4 pb-3 border-b border-ink/15">
-          <HatMark size={34} />
-          <div className="flex-1">
-            <h1 className="font-display font-medium text-2xl tracking-[0.14em] leading-none">S‑CAFE</h1>
-            <p className="font-body text-[10px] tracking-[0.16em] uppercase text-ink/50 mt-1">{t.cta}</p>
-          </div>
+      {/* Hero: your finished brand poster, shown as-is - no overlay needed
+          since it already carries the logo, name, and tagline. */}
+      <div className="relative w-full bg-[#FDF4D6]">
+        <img
+          src="/hero-brand.png"
+          alt="Saranda Cafe"
+          className="w-full h-auto max-h-80 object-contain mx-auto"
+        />
+        <div className="absolute top-4 right-4">
           <LanguageSwitch />
         </div>
+      </div>
+
+      <header className="sticky top-0 z-30 bg-paper/95 backdrop-blur">
         <CategoryNav categories={categories} activeId={activeId} onSelect={handleSelect} />
       </header>
 
       <main className="px-5">
         {!orderingOpen && (
-          <div className="border border-gold/50 bg-gold/5 text-deep text-sm font-body italic px-4 py-3 mt-4">
+          <div className="border border-wine/50 bg-wine/5 text-deep text-sm font-body italic px-4 py-3 mt-4">
             {lang === "tr" ? closedMessageTr : closedMessageEn}
           </div>
         )}
@@ -79,13 +86,11 @@ export default function MenuScreen({
         <MostLoved items={mostLoved} />
 
         <div id={`cat-${activeId}`}>
-          <h2 className="font-display font-normal text-[28px] pt-6 pb-1">
-            {lang === "tr"
-              ? categories.find((c) => c.id === activeId)?.name_tr
-              : categories.find((c) => c.id === activeId)?.name_en}
+          <h2 className="font-display font-normal text-[28px] pt-6 pb-2">
+            {lang === "tr" ? activeCategory?.name_tr : activeCategory?.name_en}
           </h2>
-          <div className="h-px bg-gold/50 mb-2" />
-          <div>
+          <ScallopDivider />
+          <div className="mt-1">
             {visibleProducts.map((p) => (
               <ProductCard key={p.id} product={p} />
             ))}

@@ -1,8 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Category, Product } from "@/lib/types";
-import { toggleSoldOut, toggleActive, updatePrice, createProduct, deleteProduct } from "@/lib/actions/menu";
+import {
+  toggleSoldOut,
+  toggleActive,
+  updatePrice,
+  createProduct,
+  deleteProduct,
+  uploadProductImage,
+  removeProductImage
+} from "@/lib/actions/menu";
 
 export default function MenuEditor({
   categories,
@@ -18,6 +26,8 @@ export default function MenuEditor({
   const [newNameEn, setNewNameEn] = useState("");
   const [newPrice, setNewPrice] = useState("");
   const [adding, setAdding] = useState(false);
+  const [uploadingId, setUploadingId] = useState<string | null>(null);
+  const fileInputs = useRef<Record<string, HTMLInputElement | null>>({});
 
   const visible = localProducts.filter((p) => p.category_id === activeCategory);
 
@@ -37,7 +47,6 @@ export default function MenuEditor({
     });
     setAdding(false);
     if (!("error" in result)) {
-      // Add a temporary local row so it shows immediately without a full refresh.
       setLocalProducts((prev) => [
         ...prev,
         {
@@ -73,6 +82,30 @@ export default function MenuEditor({
     }
   }
 
+  async function handleImagePick(product: Product, file: File) {
+    if (product.id.startsWith("temp-")) {
+      alert("Fotoğraf eklemeden önce sayfayı yenile, ürün henüz kaydediliyor.");
+      return;
+    }
+    setUploadingId(product.id);
+    const formData = new FormData();
+    formData.set("file", file);
+    const result = await uploadProductImage(product.id, formData);
+    setUploadingId(null);
+    if ("url" in result && result.url) {
+      patchLocal(product.id, { image_url: result.url });
+    } else {
+      alert("Fotoğraf yüklenemedi, tekrar dene.");
+    }
+  }
+
+  async function handleImageRemove(product: Product) {
+    patchLocal(product.id, { image_url: null });
+    if (!product.id.startsWith("temp-")) {
+      await removeProductImage(product.id);
+    }
+  }
+
   return (
     <div>
       <div className="flex gap-2 overflow-x-auto pb-3 -mx-4 px-4">
@@ -84,7 +117,7 @@ export default function MenuEditor({
               setShowAddForm(false);
             }}
             className={`px-3 py-2 rounded-full text-sm font-semibold whitespace-nowrap ${
-              activeCategory === c.id ? "bg-deep text-white" : "bg-white text-ink/70"
+              activeCategory === c.id ? "bg-wine text-white" : "bg-white text-ink/70"
             }`}
           >
             {c.name_tr}
@@ -94,7 +127,7 @@ export default function MenuEditor({
 
       <button
         onClick={() => setShowAddForm((v) => !v)}
-        className="w-full mt-3 border-2 border-dashed border-gold/40 text-deep rounded-xl py-3 font-semibold text-sm"
+        className="w-full mt-3 border-2 border-dashed border-wine/40 text-wine rounded-xl py-3 font-semibold text-sm"
       >
         {showAddForm ? "İptal" : "+ Yeni Ürün Ekle"}
       </button>
@@ -123,19 +156,71 @@ export default function MenuEditor({
           <button
             onClick={handleAdd}
             disabled={adding || !newNameTr.trim() || !newPrice.trim()}
-            className="bg-gold text-white rounded-lg py-2.5 font-semibold text-sm disabled:opacity-50"
+            className="bg-wine text-white rounded-lg py-2.5 font-semibold text-sm disabled:opacity-50"
           >
             {adding ? "Ekleniyor..." : "Ürünü Kaydet"}
           </button>
+          <p className="text-xs text-ink/40 px-1">
+            Ürünü kaydettikten sonra sayfayı yenileyip fotoğraf ekleyebilirsin.
+          </p>
         </div>
       )}
 
       <div className="flex flex-col gap-2 mt-3">
         {visible.map((product) => (
           <div key={product.id} className="bg-white rounded-xl p-3 shadow-sm">
-            <div className="flex items-center justify-between mb-2">
-              <p className="font-semibold text-sm">{product.name_tr}</p>
-              <p className="text-xs text-ink/50">{product.name_en}</p>
+            <div className="flex items-start gap-3 mb-2">
+              {product.image_url ? (
+                <div className="relative w-16 h-16 shrink-0 rounded-lg overflow-hidden bg-paper">
+                  <img
+                    src={product.image_url}
+                    alt={product.name_tr}
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="w-16 h-16 shrink-0 rounded-lg bg-paper flex items-center justify-center text-[10px] text-ink/30 text-center px-1">
+                  Fotoğraf yok
+                </div>
+              )}
+              <div className="flex-1 min-w-0">
+                <p className="font-semibold text-sm">{product.name_tr}</p>
+                <p className="text-xs text-ink/50">{product.name_en}</p>
+                <div className="flex gap-2 mt-1.5">
+                  <button
+                    onClick={() => fileInputs.current[product.id]?.click()}
+                    disabled={uploadingId === product.id}
+                    className="text-xs font-semibold text-wine underline"
+                  >
+                    {uploadingId === product.id
+                      ? "Yükleniyor..."
+                      : product.image_url
+                      ? "Fotoğrafı Değiştir"
+                      : "Fotoğraf Ekle"}
+                  </button>
+                  {product.image_url && (
+                    <button
+                      onClick={() => handleImageRemove(product)}
+                      className="text-xs font-semibold text-ink/40 underline"
+                    >
+                      Kaldır
+                    </button>
+                  )}
+                  <input
+                    ref={(el) => {
+                      fileInputs.current[product.id] = el;
+                    }}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleImagePick(product, file);
+                      e.target.value = "";
+                    }}
+                  />
+                </div>
+              </div>
             </div>
 
             <div className="flex items-center gap-2 mb-2">
@@ -164,7 +249,7 @@ export default function MenuEditor({
                   if (!product.id.startsWith("temp-")) await toggleSoldOut(product.id, next);
                 }}
                 className={`flex-1 rounded-lg py-2 text-sm font-semibold ${
-                  product.sold_out ? "bg-deep text-white" : "bg-paper text-ink/70"
+                  product.sold_out ? "bg-wine text-white" : "bg-paper text-ink/70"
                 }`}
               >
                 {product.sold_out ? "Tükendi ✓" : "Tükendi olarak işaretle"}
@@ -184,7 +269,7 @@ export default function MenuEditor({
             </div>
             <button
               onClick={() => handleDelete(product)}
-              className="w-full mt-2 text-xs font-semibold text-deep/80 py-1.5"
+              className="w-full mt-2 text-xs font-semibold text-wine/80 py-1.5"
             >
               Ürünü Tamamen Sil
             </button>

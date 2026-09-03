@@ -23,7 +23,7 @@ export default function CategoryNav({
             key={c.id}
             onClick={() => onSelect(c.id)}
             className={`font-display text-[15px] tracking-[0.06em] uppercase whitespace-nowrap pb-1 border-b-[1.5px] transition-colors ${
-              active ? "text-deep border-gold" : "text-ink/45 border-transparent"
+              active ? "text-deep border-wine" : "text-ink/45 border-transparent"
             }`}
           >
             {lang === "tr" ? c.name_tr : c.name_en}

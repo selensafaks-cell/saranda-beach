@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-gold text-white rounded-xl py-3 font-semibold disabled:opacity-60"
+          className="bg-wine text-white rounded-xl py-3 font-semibold disabled:opacity-60"
         >
           {loading ? "..." : "Giriş Yap"}
         </button>
