@@ -6,7 +6,7 @@ import { useLanguage } from "@/context/LanguageContext";
 import { OrderStatus } from "@/lib/types";
 import BeachMark from "@/components/BeachMark";
 
-const STEPS: OrderStatus[] = ["received", "accepted", "preparing", "on_the_way", "delivered"];
+const STEPS: OrderStatus[] = ["received", "preparing", "delivered"];
 
 export default function OrderStatusPage({ params }: { params: { id: string } }) {
   const { t } = useLanguage();

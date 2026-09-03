@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { toggleOrderingOpen, toggleWhatsappNotify } from "@/lib/actions/settings";
+import NotificationOptIn from "@/components/NotificationOptIn";
 
 export default function SettingsForm({
   settings
@@ -55,6 +56,15 @@ export default function SettingsForm({
             }`}
           />
         </button>
+      </div>
+
+      <div className="bg-white rounded-xl p-4 shadow-sm">
+        <p className="font-semibold text-sm mb-1">Sipariş Bildirimleri (Telefon)</p>
+        <p className="text-xs text-ink/50 mb-3">
+          Bu telefonda yeni sipariş geldiğinde bildirim almak için etkinleştir. iPhone'da önce siteyi Ana
+          Ekrana eklemen gerekir (Safari → Paylaş → Ana Ekrana Ekle).
+        </p>
+        <NotificationOptIn />
       </div>
 
       <p className="text-xs text-ink/40 px-1">

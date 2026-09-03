@@ -2,10 +2,12 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { useCart } from "@/context/CartContext";
 import { useLanguage } from "@/context/LanguageContext";
 import { submitOrder } from "@/lib/actions/orders";
 import { getStoredQrLocation } from "@/components/QrLocationCapture";
+import { createClient } from "@/lib/supabase/client";
 
 const LOCATION_OPTIONS = [
   { code: "beach", tr: "Plaj Alanı", en: "Beach Area" },
@@ -28,12 +30,30 @@ export default function CheckoutPage() {
   const [note, setNote] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [customerId, setCustomerId] = useState<string | null>(null);
 
   useEffect(() => {
     const stored = getStoredQrLocation();
     if (stored && LOCATION_OPTIONS.some((o) => o.code === stored)) {
       setLocationCode(stored);
     }
+  }, []);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      setCustomerId(user.id);
+      const { data: profile } = await supabase
+        .from("customers")
+        .select("first_name, last_name")
+        .eq("id", user.id)
+        .single();
+      if (profile) {
+        setFirstName(profile.first_name ?? "");
+        setLastName(profile.last_name ?? "");
+      }
+    });
   }, []);
 
   if (lines.length === 0) {
@@ -59,6 +79,7 @@ export default function CheckoutPage() {
       locationNumber: locationCode === "daire" ? locationNumber : undefined,
       note,
       language: lang,
+      customerId: customerId || undefined,
       lines: lines.map((l) => ({
         product_id: l.product_id,
         quantity: l.quantity,
@@ -86,7 +107,15 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen px-5 pb-32 pt-6">
-      <h1 className="font-display font-medium text-[28px] mb-4">{t.checkout}</h1>
+      <h1 className="font-display font-medium text-[28px] mb-1">{t.checkout}</h1>
+      {!customerId && (
+        <p className="font-body text-[12px] italic text-ink/45 mb-4">
+          <Link href="/account/login" className="text-deep underline">
+            Hesabın var mı? Giriş yap
+          </Link>{" "}
+          — siparişlerini takip etmek için, ya da misafir olarak devam et.
+        </p>
+      )}
 
       <div className="mb-6">
         {lines.map((line) => (

@@ -21,16 +21,12 @@ interface OrderRow {
 
 const GROUPS: { status: OrderStatus; label: string }[] = [
   { status: "received", label: "YENİ" },
-  { status: "accepted", label: "KABUL EDİLDİ" },
-  { status: "preparing", label: "HAZIRLANIYOR" },
-  { status: "on_the_way", label: "YOLDA" }
+  { status: "preparing", label: "HAZIRLANIYOR" }
 ];
 
 const NEXT_ACTION: Partial<Record<OrderStatus, { next: OrderStatus; label: string }>> = {
-  received: { next: "accepted", label: "Kabul Et" },
-  accepted: { next: "preparing", label: "Hazırlanıyor" },
-  preparing: { next: "on_the_way", label: "Yola Çıktı" },
-  on_the_way: { next: "delivered", label: "Teslim Edildi" }
+  received: { next: "preparing", label: "Hazırlanıyor" },
+  preparing: { next: "delivered", label: "Teslim Edildi" }
 };
 
 export default function OrdersBoard() {
@@ -48,7 +44,7 @@ export default function OrdersBoard() {
         .select(
           "id, public_order_number, customer_first_name, customer_last_name, status, total, note, created_at, location_number, locations(name_tr), order_items(name_tr, quantity, unit_price, line_note)"
         )
-        .in("status", ["received", "accepted", "preparing", "on_the_way"])
+        .in("status", ["received", "preparing"])
         .order("created_at", { ascending: true });
 
       if (data) {

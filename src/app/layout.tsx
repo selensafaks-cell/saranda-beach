@@ -20,7 +20,8 @@ const lora = Lora({
 
 export const metadata: Metadata = {
   title: "S-Cafe Beach Restaurant",
-  description: "Şezlongundan sipariş ver / Order from your sunbed"
+  description: "Şezlongundan sipariş ver / Order from your sunbed",
+  manifest: "/manifest.json"
 };
 
 export const viewport: Viewport = {

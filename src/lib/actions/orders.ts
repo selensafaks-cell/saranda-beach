@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/server";
 import { Language } from "@/lib/types";
+import { notifyStaffOfNewOrder } from "@/lib/actions/push";
 
 interface SubmitOrderInput {
   firstName: string;
@@ -11,6 +12,7 @@ interface SubmitOrderInput {
   locationNumber?: string; // free text, only used for 'daire'
   note?: string;
   language: Language;
+  customerId?: string; // set if the guest is logged into an account
   lines: { product_id: string; quantity: number; line_note?: string }[];
 }
 
@@ -74,16 +76,19 @@ export async function submitOrder(input: SubmitOrderInput) {
     });
   }
 
-  // Resolve location id from code, if provided
+  // Resolve location id + label from code, if provided
   let locationId: string | null = null;
+  let locationLabel = "";
   if (input.locationCode) {
     const { data: loc } = await supabase
       .from("locations")
-      .select("id")
+      .select("id, name_tr")
       .eq("code", input.locationCode)
       .single();
     locationId = loc?.id ?? null;
+    locationLabel = loc?.name_tr ?? "";
   }
+  if (input.locationNumber) locationLabel = `${locationLabel} ${input.locationNumber}`.trim();
 
   const total = subtotal; // no discounts/tax logic in Phase 1
 
@@ -93,6 +98,7 @@ export async function submitOrder(input: SubmitOrderInput) {
       customer_first_name: input.firstName.trim(),
       customer_last_name: input.lastName.trim(),
       customer_phone: input.phone?.trim() || null,
+      customer_id: input.customerId || null,
       location_id: locationId,
       location_number: input.locationNumber?.trim() || null,
       status: "received",
@@ -119,8 +125,11 @@ export async function submitOrder(input: SubmitOrderInput) {
     return { error: "ORDER_ITEMS_FAILED" as const };
   }
 
-  // Optional WhatsApp notification to staff (Phase 1: simple wa.me link is
-  // generated client-side after success; true API push is a Phase 2 item).
+  // Push notification to staff phones - silently no-ops if push isn't
+  // configured (missing VAPID env vars) or no one has opted in yet.
+  notifyStaffOfNewOrder(order.public_order_number, locationLabel).catch(() => {
+    // never block order success on a notification failure
+  });
 
   return { success: true as const, orderId: order.id, orderNumber: order.public_order_number };
 }

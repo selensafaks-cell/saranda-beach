@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useMemo, useEffect } from "react";
+import Link from "next/link";
 import { Category, Product } from "@/lib/types";
 import { useLanguage } from "@/context/LanguageContext";
 import LanguageSwitch from "@/components/LanguageSwitch";
@@ -10,6 +11,7 @@ import MostLoved from "@/components/MostLoved";
 import CartBar from "@/components/CartBar";
 import QrLocationCapture from "@/components/QrLocationCapture";
 import ScallopDivider from "@/components/ScallopDivider";
+import { createClient } from "@/lib/supabase/client";
 
 interface MostLovedItem {
   product_id: string;
@@ -36,6 +38,12 @@ export default function MenuScreen({
 }) {
   const { lang, t } = useLanguage();
   const [activeId, setActiveId] = useState(categories[0]?.id ?? "");
+  const [loggedIn, setLoggedIn] = useState(false);
+
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getUser().then(({ data: { user } }) => setLoggedIn(!!user));
+  }, []);
 
   useEffect(() => {
     if (categories.length && !categories.find((c) => c.id === activeId)) {
@@ -67,7 +75,13 @@ export default function MenuScreen({
           alt="Saranda Cafe"
           className="absolute inset-0 w-full h-full object-cover"
         />
-        <div className="absolute top-4 right-4">
+        <div className="absolute top-4 right-4 flex items-center gap-2">
+          <Link
+            href={loggedIn ? "/account" : "/account/login"}
+            className="text-[11px] font-body italic text-paper bg-ink/25 backdrop-blur px-2.5 py-1.5 rounded border border-paper/40"
+          >
+            {loggedIn ? (lang === "tr" ? "Hesabım" : "My Account") : lang === "tr" ? "Giriş Yap" : "Sign In"}
+          </Link>
           <LanguageSwitch />
         </div>
       </div>
