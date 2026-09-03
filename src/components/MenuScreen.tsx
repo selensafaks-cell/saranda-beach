@@ -59,10 +59,9 @@ export default function MenuScreen({
     <div className="min-h-screen pb-32">
       <QrLocationCapture />
 
-      {/* Hero: your finished brand poster, cropped edge-to-edge so the
-          stripe pattern reads seamlessly (no letterbox border). Measured so
-          the logo, name, and tagline all stay safely inside the crop. */}
-      <div className="relative w-full overflow-hidden" style={{ aspectRatio: "1200 / 1180" }}>
+      {/* Hero: wide banner crop of your logo poster - measured so the
+          logo and "Saranda Cafe" text stay safely inside frame. */}
+      <div className="relative w-full overflow-hidden" style={{ aspectRatio: "1200 / 780" }}>
         <img
           src="/hero-brand.png"
           alt="Saranda Cafe"
