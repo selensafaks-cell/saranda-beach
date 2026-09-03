@@ -59,13 +59,14 @@ export default function MenuScreen({
     <div className="min-h-screen pb-32">
       <QrLocationCapture />
 
-      {/* Hero: your finished brand poster, shown as-is - no overlay needed
-          since it already carries the logo, name, and tagline. */}
-      <div className="relative w-full bg-[#FDF4D6]">
+      {/* Hero: your finished brand poster, cropped edge-to-edge so the
+          stripe pattern reads seamlessly (no letterbox border). Measured so
+          the logo, name, and tagline all stay safely inside the crop. */}
+      <div className="relative w-full overflow-hidden" style={{ aspectRatio: "1200 / 1180" }}>
         <img
           src="/hero-brand.png"
           alt="Saranda Cafe"
-          className="w-full h-auto max-h-80 object-contain mx-auto"
+          className="absolute inset-0 w-full h-full object-cover"
         />
         <div className="absolute top-4 right-4">
           <LanguageSwitch />
