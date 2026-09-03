@@ -43,7 +43,7 @@ export default function AccountLoginPage() {
       const result = await customerSignUp(email, password, firstName, lastName);
       setLoading(false);
       if ("error" in result) {
-        setError(result.error);
+        setError(result.error ?? "Bir hata oluştu, tekrar dene.");
         return;
       }
       router.push("/account");
@@ -54,7 +54,7 @@ export default function AccountLoginPage() {
       const result = await customerRequestPasswordReset(email);
       setLoading(false);
       if ("error" in result) {
-        setError(result.error);
+        setError(result.error ?? "Bir hata oluştu, tekrar dene.");
         return;
       }
       setMessage("Şifre sıfırlama linki e-postana gönderildi.");

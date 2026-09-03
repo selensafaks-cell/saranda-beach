@@ -18,7 +18,7 @@ export default function ResetPasswordPage() {
     const result = await customerUpdatePassword(password);
     setLoading(false);
     if ("error" in result) {
-      setError(result.error);
+      setError(result.error ?? "Bir hata oluştu, tekrar dene.");
       return;
     }
     setDone(true);
