@@ -14,7 +14,7 @@ interface OrderRow {
   note: string | null;
   created_at: string;
   location_number: string | null;
-  locations: { name_tr: string } | null;
+  locations: { name_tr: string }[] | null;
   order_items: { name_tr: string; quantity: number; unit_price: number }[];
 }
 
@@ -32,7 +32,7 @@ function toCsv(orders: OrderRow[]): string {
   const rows = orders.map((o) => {
     const date = new Date(o.created_at);
     const items = o.order_items.map((i) => `${i.quantity}x ${i.name_tr}`).join(" | ");
-    const location = [o.locations?.name_tr, o.location_number].filter(Boolean).join(" ");
+    const location = [o.locations?.[0]?.name_tr, o.location_number].filter(Boolean).join(" ");
     return [
       o.public_order_number,
       date.toLocaleDateString("tr-TR"),
@@ -112,7 +112,7 @@ export default function HistoryView({ orders }: { orders: OrderRow[] }) {
             </div>
             <p className="text-xs text-ink/50 mt-0.5">
               {new Date(order.created_at).toLocaleString("tr-TR")} · {STATUS_LABEL[order.status]}
-              {order.locations?.name_tr ? ` · ${order.locations.name_tr}` : ""}
+              {order.locations?.[0]?.name_tr ? ` · ${order.locations[0].name_tr}` : ""}
               {order.location_number ? ` ${order.location_number}` : ""}
             </p>
             <p className="text-xs text-ink/60 mt-1">

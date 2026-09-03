@@ -15,7 +15,7 @@ interface OrderRow {
   note: string | null;
   created_at: string;
   location_number: string | null;
-  locations: { name_tr: string } | null;
+  locations: { name_tr: string }[] | null;
   order_items: { name_tr: string; quantity: number; unit_price: number; line_note: string | null }[];
 }
 
@@ -98,7 +98,7 @@ export default function OrdersBoard() {
                       className="w-full flex items-center justify-between text-left"
                     >
                       <span className="font-semibold text-sm">
-                        #{order.public_order_number} — {order.locations?.name_tr ?? "—"}
+                        #{order.public_order_number} — {order.locations?.[0]?.name_tr ?? "—"}
                         {order.location_number ? ` ${order.location_number}` : ""} — {order.total} TL
                       </span>
                       <span className="text-xs text-ink/40">
