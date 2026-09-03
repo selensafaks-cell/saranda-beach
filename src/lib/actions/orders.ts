@@ -1,0 +1,126 @@
+"use server";
+
+import { createClient } from "@/lib/supabase/server";
+import { Language } from "@/lib/types";
+
+interface SubmitOrderInput {
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  locationCode?: string; // e.g. 'beach', 'daire'
+  locationNumber?: string; // free text, only used for 'daire'
+  note?: string;
+  language: Language;
+  lines: { product_id: string; quantity: number; line_note?: string }[];
+}
+
+export async function submitOrder(input: SubmitOrderInput) {
+  const supabase = createClient();
+
+  if (!input.firstName.trim() || !input.lastName.trim()) {
+    return { error: "NAME_REQUIRED" as const };
+  }
+  if (input.lines.length === 0) {
+    return { error: "EMPTY_CART" as const };
+  }
+
+  // Check ordering is currently open
+  const { data: settings } = await supabase.from("settings").select("*").eq("id", 1).single();
+  if (settings && settings.ordering_open === false) {
+    return { error: "ORDERING_CLOSED" as const };
+  }
+
+  // CRITICAL: never trust prices from the client. Re-fetch every product's
+  // current price from the DB and rebuild the order server-side.
+  const productIds = input.lines.map((l) => l.product_id);
+  const { data: products, error: productsError } = await supabase
+    .from("products")
+    .select("id, name_tr, name_en, price, sold_out, active")
+    .in("id", productIds);
+
+  if (productsError || !products) {
+    return { error: "PRODUCTS_NOT_FOUND" as const };
+  }
+
+  const productMap = new Map(products.map((p) => [p.id, p]));
+
+  let subtotal = 0;
+  const orderItemsPayload: {
+    product_id: string;
+    name_tr: string;
+    name_en: string;
+    unit_price: number;
+    quantity: number;
+    line_note?: string;
+  }[] = [];
+
+  for (const line of input.lines) {
+    const product = productMap.get(line.product_id);
+    if (!product || !product.active) {
+      return { error: "PRODUCT_UNAVAILABLE" as const };
+    }
+    if (product.sold_out) {
+      return { error: "PRODUCT_SOLD_OUT" as const, productName: product.name_tr };
+    }
+    const lineTotal = product.price * line.quantity;
+    subtotal += lineTotal;
+    orderItemsPayload.push({
+      product_id: product.id,
+      name_tr: product.name_tr,
+      name_en: product.name_en,
+      unit_price: product.price,
+      quantity: line.quantity,
+      line_note: line.line_note
+    });
+  }
+
+  // Resolve location id from code, if provided
+  let locationId: string | null = null;
+  if (input.locationCode) {
+    const { data: loc } = await supabase
+      .from("locations")
+      .select("id")
+      .eq("code", input.locationCode)
+      .single();
+    locationId = loc?.id ?? null;
+  }
+
+  const total = subtotal; // no discounts/tax logic in Phase 1
+
+  const { data: order, error: orderError } = await supabase
+    .from("orders")
+    .insert({
+      customer_first_name: input.firstName.trim(),
+      customer_last_name: input.lastName.trim(),
+      customer_phone: input.phone?.trim() || null,
+      location_id: locationId,
+      location_number: input.locationNumber?.trim() || null,
+      status: "received",
+      subtotal,
+      total,
+      note: input.note?.trim() || null,
+      language: input.language
+    })
+    .select()
+    .single();
+
+  if (orderError || !order) {
+    return { error: "ORDER_CREATE_FAILED" as const };
+  }
+
+  const { error: itemsError } = await supabase.from("order_items").insert(
+    orderItemsPayload.map((item) => ({
+      order_id: order.id,
+      ...item
+    }))
+  );
+
+  if (itemsError) {
+    return { error: "ORDER_ITEMS_FAILED" as const };
+  }
+
+  // Optional WhatsApp notification to staff (Phase 1: simple wa.me link is
+  // generated client-side after success; true API push is a Phase 2 item).
+
+  return { success: true as const, orderId: order.id, orderNumber: order.public_order_number };
+}
