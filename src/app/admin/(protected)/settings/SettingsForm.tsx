@@ -61,7 +61,10 @@ export default function SettingsForm({
       <div className="bg-white rounded-xl p-4 shadow-sm">
         <p className="font-semibold text-sm mb-1">Sipariş Bildirimleri (Telefon)</p>
         <p className="text-xs text-ink/50 mb-3">
-          Bu telefonda yeni sipariş geldiğinde bildirim almak için etkinleştir. iPhone'da önce siteyi Ana
+          Bu telefonda yeni sipariş geldiğinde bildirim almak için etkinleştir. Bu ayar kişiye değil
+          cihaza bağlıdır — sadece Turan'ın bildirim almasını istiyorsan, bu düğmeye yalnızca onun
+          telefonunda bas, kendi telefonunda basma (ya da daha önce bastıysan "Bu cihazda bildirimleri
+          kapat" ile kapat). iPhone'da önce siteyi Ana
           Ekrana eklemen gerekir (Safari → Paylaş → Ana Ekrana Ekle).
         </p>
         <NotificationOptIn />

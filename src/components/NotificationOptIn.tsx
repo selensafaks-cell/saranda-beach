@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-import { savePushSubscription } from "@/lib/actions/push";
+import { savePushSubscription, removePushSubscription } from "@/lib/actions/push";
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -74,6 +74,21 @@ export default function NotificationOptIn() {
     }
   }
 
+  async function handleDisable() {
+    setStatus("loading");
+    try {
+      const reg = await navigator.serviceWorker.ready;
+      const existing = await reg.pushManager.getSubscription();
+      if (existing) {
+        await removePushSubscription(existing.endpoint);
+        await existing.unsubscribe();
+      }
+      setStatus("idle");
+    } catch {
+      setStatus("subscribed");
+    }
+  }
+
   if (status === "unsupported") {
     return (
       <p className="text-xs text-ink/50">
@@ -84,7 +99,14 @@ export default function NotificationOptIn() {
   }
 
   if (status === "subscribed") {
-    return <p className="text-xs text-ink/50">Bildirimler açık ✓</p>;
+    return (
+      <div>
+        <p className="text-xs text-ink/50 mb-2">Bu cihazda bildirimler açık ✓</p>
+        <button onClick={handleDisable} className="text-xs font-semibold text-wine/80 underline">
+          Bu cihazda bildirimleri kapat
+        </button>
+      </div>
+    );
   }
 
   return (

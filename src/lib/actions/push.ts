@@ -23,6 +23,13 @@ export async function savePushSubscription(input: {
   return { success: true };
 }
 
+export async function removePushSubscription(endpoint: string) {
+  const supabase = createClient();
+  const { error } = await supabase.from("push_subscriptions").delete().eq("endpoint", endpoint);
+  if (error) return { error: error.message };
+  return { success: true };
+}
+
 export async function notifyStaffOfNewOrder(orderNumber: number, locationLabel: string) {
   const vapidPublic = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   const vapidPrivate = process.env.VAPID_PRIVATE_KEY;
