@@ -35,21 +35,21 @@ export default function ProductCard({ product }: { product: Product }) {
       <div className="flex-1 min-w-0">
         <h3 className="font-display font-semibold text-base leading-tight truncate">{name}</h3>
         {description && (
-          <p className="text-sm text-charcoal/60 line-clamp-2 mt-0.5">{description}</p>
+          <p className="text-sm text-ink/60 line-clamp-2 mt-0.5">{description}</p>
         )}
         {product.includes_fries && (
-          <span className="inline-block text-[11px] uppercase tracking-wide text-seafoam font-semibold mt-1">
+          <span className="inline-block text-[11px] uppercase tracking-wide text-olive font-semibold mt-1">
             {t.friesIncluded}
           </span>
         )}
         <div className="flex items-center justify-between mt-2">
-          <span className="font-semibold text-terracotta">{product.price} TL</span>
+          <span className="font-semibold text-coral">{product.price} TL</span>
           {product.sold_out ? (
-            <span className="text-sm font-semibold text-charcoal/40">{t.soldOut}</span>
+            <span className="text-sm font-semibold text-ink/40">{t.soldOut}</span>
           ) : (
             <button
               onClick={handleAdd}
-              className="bg-deepsea text-white text-sm font-semibold rounded-full px-4 py-2 min-h-[40px] active:scale-95 transition"
+              className="bg-aegean text-white text-sm font-semibold rounded-full px-4 py-2 min-h-[40px] active:scale-95 transition"
             >
               + {t.add}
             </button>

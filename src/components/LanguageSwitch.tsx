@@ -10,7 +10,7 @@ export default function LanguageSwitch() {
       <button
         onClick={() => setLang("tr")}
         className={`px-3 py-1.5 rounded-full text-sm font-semibold transition ${
-          lang === "tr" ? "bg-deepsea text-white" : "text-charcoal/70"
+          lang === "tr" ? "bg-aegean text-white" : "text-ink/70"
         }`}
         aria-pressed={lang === "tr"}
       >
@@ -19,7 +19,7 @@ export default function LanguageSwitch() {
       <button
         onClick={() => setLang("en")}
         className={`px-3 py-1.5 rounded-full text-sm font-semibold transition ${
-          lang === "en" ? "bg-deepsea text-white" : "text-charcoal/70"
+          lang === "en" ? "bg-aegean text-white" : "text-ink/70"
         }`}
         aria-pressed={lang === "en"}
       >

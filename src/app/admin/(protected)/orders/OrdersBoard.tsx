@@ -86,7 +86,7 @@ export default function OrdersBoard() {
         if (groupOrders.length === 0) return null;
         return (
           <section key={group.status}>
-            <h2 className="font-bold text-sm text-charcoal/60 mb-2">{group.label}</h2>
+            <h2 className="font-bold text-sm text-ink/60 mb-2">{group.label}</h2>
             <div className="flex flex-col gap-2">
               {groupOrders.map((order) => {
                 const isOpen = expanded === order.id;
@@ -101,7 +101,7 @@ export default function OrdersBoard() {
                         #{order.public_order_number} — {order.locations?.name_tr ?? "—"}
                         {order.location_number ? ` ${order.location_number}` : ""} — {order.total} TL
                       </span>
-                      <span className="text-xs text-charcoal/40">
+                      <span className="text-xs text-ink/40">
                         {new Date(order.created_at).toLocaleTimeString("tr-TR", {
                           hour: "2-digit",
                           minute: "2-digit"
@@ -114,7 +114,7 @@ export default function OrdersBoard() {
                         <p className="text-sm font-semibold mb-1">
                           {order.customer_first_name} {order.customer_last_name}
                         </p>
-                        <ul className="text-sm text-charcoal/70 mb-2">
+                        <ul className="text-sm text-ink/70 mb-2">
                           {order.order_items.map((item, idx) => (
                             <li key={idx}>
                               {item.quantity}× {item.name_tr}
@@ -123,7 +123,7 @@ export default function OrdersBoard() {
                           ))}
                         </ul>
                         {order.note && (
-                          <p className="text-sm text-terracotta mb-2">Not: {order.note}</p>
+                          <p className="text-sm text-coral mb-2">Not: {order.note}</p>
                         )}
                       </div>
                     )}
@@ -131,7 +131,7 @@ export default function OrdersBoard() {
                     {action && (
                       <button
                         onClick={() => handleAdvance(order)}
-                        className="mt-3 w-full bg-deepsea text-white rounded-xl py-2.5 font-semibold text-sm"
+                        className="mt-3 w-full bg-aegean text-white rounded-xl py-2.5 font-semibold text-sm"
                       >
                         {action.label}
                       </button>
@@ -145,7 +145,7 @@ export default function OrdersBoard() {
       })}
 
       {orders.length === 0 && (
-        <p className="text-center text-charcoal/40 py-12">Şu anda aktif sipariş yok</p>
+        <p className="text-center text-ink/40 py-12">Şu anda aktif sipariş yok</p>
       )}
     </div>
   );

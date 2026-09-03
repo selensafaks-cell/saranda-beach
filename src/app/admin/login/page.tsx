@@ -21,7 +21,7 @@ export default function AdminLoginPage() {
   return (
     <div className="min-h-screen flex items-center justify-center px-6 bg-sand">
       <form onSubmit={handleSubmit} className="w-full max-w-sm flex flex-col gap-3">
-        <h1 className="font-display font-bold text-2xl text-deepsea mb-4 text-center">
+        <h1 className="font-display font-bold text-2xl text-aegean mb-4 text-center">
           S-Cafe Yönetim
         </h1>
         <input
@@ -44,7 +44,7 @@ export default function AdminLoginPage() {
         <button
           type="submit"
           disabled={loading}
-          className="bg-deepsea text-white rounded-xl py-3 font-semibold disabled:opacity-60"
+          className="bg-aegean text-white rounded-xl py-3 font-semibold disabled:opacity-60"
         >
           {loading ? "..." : "Giriş Yap"}
         </button>

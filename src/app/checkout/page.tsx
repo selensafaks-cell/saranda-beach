@@ -39,7 +39,7 @@ export default function CheckoutPage() {
   if (lines.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center px-6">
-        <p className="text-charcoal/60">{t.emptyCart}</p>
+        <p className="text-ink/60">{t.emptyCart}</p>
       </div>
     );
   }
@@ -95,11 +95,11 @@ export default function CheckoutPage() {
               <p className="font-semibold text-sm">
                 {line.quantity}× {lang === "tr" ? line.name_tr : line.name_en}
               </p>
-              <p className="text-xs text-charcoal/50">{line.unit_price * line.quantity} TL</p>
+              <p className="text-xs text-ink/50">{line.unit_price * line.quantity} TL</p>
             </div>
             <button
               onClick={() => remove(line.product_id)}
-              className="text-sm text-terracotta font-semibold"
+              className="text-sm text-coral font-semibold"
             >
               {t.remove}
             </button>
@@ -174,7 +174,7 @@ export default function CheckoutPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="fixed bottom-4 left-4 right-4 bg-deepsea text-white rounded-2xl py-4 font-semibold shadow-lg disabled:opacity-60"
+          className="fixed bottom-4 left-4 right-4 bg-aegean text-white rounded-2xl py-4 font-semibold shadow-lg disabled:opacity-60"
         >
           {submitting ? "..." : `${t.placeOrder} · ${total} TL`}
         </button>

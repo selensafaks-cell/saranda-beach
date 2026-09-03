@@ -38,7 +38,7 @@ export default function MostLoved({ items }: { items: MostLovedItem[] }) {
             <p className="text-sm font-semibold leading-tight line-clamp-2">
               {lang === "tr" ? item.name_tr : item.name_en}
             </p>
-            <p className="text-terracotta text-sm font-semibold mt-1">{item.price} TL</p>
+            <p className="text-coral text-sm font-semibold mt-1">{item.price} TL</p>
           </button>
         ))}
       </div>

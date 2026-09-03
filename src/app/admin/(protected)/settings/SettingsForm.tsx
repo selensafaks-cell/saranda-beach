@@ -16,7 +16,7 @@ export default function SettingsForm({
       <div className="bg-white rounded-xl p-4 shadow-sm flex items-center justify-between">
         <div>
           <p className="font-semibold text-sm">Sipariş Alımı</p>
-          <p className="text-xs text-charcoal/50">{open ? "Açık" : "Kapalı"}</p>
+          <p className="text-xs text-ink/50">{open ? "Açık" : "Kapalı"}</p>
         </div>
         <button
           onClick={async () => {
@@ -24,7 +24,7 @@ export default function SettingsForm({
             setOpen(next);
             await toggleOrderingOpen(next);
           }}
-          className={`w-14 h-8 rounded-full relative transition ${open ? "bg-deepsea" : "bg-charcoal/20"}`}
+          className={`w-14 h-8 rounded-full relative transition ${open ? "bg-aegean" : "bg-ink/20"}`}
         >
           <span
             className={`absolute top-1 w-6 h-6 rounded-full bg-white transition ${
@@ -37,7 +37,7 @@ export default function SettingsForm({
       <div className="bg-white rounded-xl p-4 shadow-sm flex items-center justify-between">
         <div>
           <p className="font-semibold text-sm">WhatsApp Bildirimi</p>
-          <p className="text-xs text-charcoal/50">{settings?.whatsapp_number ?? "+90 551 553 09 02"}</p>
+          <p className="text-xs text-ink/50">{settings?.whatsapp_number ?? "+90 551 553 09 02"}</p>
         </div>
         <button
           onClick={async () => {
@@ -46,7 +46,7 @@ export default function SettingsForm({
             await toggleWhatsappNotify(next);
           }}
           className={`w-14 h-8 rounded-full relative transition ${
-            whatsapp ? "bg-deepsea" : "bg-charcoal/20"
+            whatsapp ? "bg-aegean" : "bg-ink/20"
           }`}
         >
           <span
@@ -57,7 +57,7 @@ export default function SettingsForm({
         </button>
       </div>
 
-      <p className="text-xs text-charcoal/40 px-1">
+      <p className="text-xs text-ink/40 px-1">
         Kullanıcı yönetimi (Owner/Turan hesapları) Supabase panelinden yapılır.
       </p>
     </div>

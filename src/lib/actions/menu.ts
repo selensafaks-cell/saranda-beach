@@ -52,3 +52,14 @@ export async function createProduct(input: {
   if (error) return { error: error.message };
   return { success: true };
 }
+
+export async function deleteProduct(productId: string) {
+  const supabase = createClient();
+  // Orders keep a name/price snapshot in order_items, so deleting a product
+  // never changes past orders - product_id on old order_items just becomes null.
+  const { error } = await supabase.from("products").delete().eq("id", productId);
+  revalidatePath("/admin/menu");
+  revalidatePath("/");
+  if (error) return { error: error.message };
+  return { success: true };
+}
