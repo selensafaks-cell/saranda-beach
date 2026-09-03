@@ -75,7 +75,7 @@ export default function HistoryView({ orders }: { orders: OrderRow[] }) {
         <h1 className="font-display font-semibold text-lg">Sipariş Geçmişi</h1>
         <button
           onClick={() => downloadCsv(filtered)}
-          className="bg-aegean text-white text-sm font-semibold rounded-lg px-3 py-2"
+          className="bg-gold text-white text-sm font-semibold rounded-lg px-3 py-2"
         >
           CSV İndir
         </button>
@@ -88,7 +88,7 @@ export default function HistoryView({ orders }: { orders: OrderRow[] }) {
               key={s}
               onClick={() => setFilter(s)}
               className={`px-3 py-2 rounded-full text-sm font-semibold whitespace-nowrap ${
-                filter === s ? "bg-coral text-white" : "bg-white text-ink/70"
+                filter === s ? "bg-deep text-white" : "bg-white text-ink/70"
               }`}
             >
               {s === "all" ? "Hepsi" : STATUS_LABEL[s]}
@@ -108,7 +108,7 @@ export default function HistoryView({ orders }: { orders: OrderRow[] }) {
               <p className="font-semibold text-sm">
                 #{order.public_order_number} — {order.customer_first_name} {order.customer_last_name}
               </p>
-              <p className="text-sm font-semibold text-coral">{order.total} TL</p>
+              <p className="text-sm font-semibold text-deep">{order.total} TL</p>
             </div>
             <p className="text-xs text-ink/50 mt-0.5">
               {new Date(order.created_at).toLocaleString("tr-TR")} · {STATUS_LABEL[order.status]}

@@ -123,7 +123,7 @@ export default function OrdersBoard() {
                           ))}
                         </ul>
                         {order.note && (
-                          <p className="text-sm text-coral mb-2">Not: {order.note}</p>
+                          <p className="text-sm text-deep mb-2">Not: {order.note}</p>
                         )}
                       </div>
                     )}
@@ -131,7 +131,7 @@ export default function OrdersBoard() {
                     {action && (
                       <button
                         onClick={() => handleAdvance(order)}
-                        className="mt-3 w-full bg-aegean text-white rounded-xl py-2.5 font-semibold text-sm"
+                        className="mt-3 w-full bg-gold text-white rounded-xl py-2.5 font-semibold text-sm"
                       >
                         {action.label}
                       </button>

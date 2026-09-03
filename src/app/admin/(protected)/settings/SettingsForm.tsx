@@ -24,7 +24,7 @@ export default function SettingsForm({
             setOpen(next);
             await toggleOrderingOpen(next);
           }}
-          className={`w-14 h-8 rounded-full relative transition ${open ? "bg-aegean" : "bg-ink/20"}`}
+          className={`w-14 h-8 rounded-full relative transition ${open ? "bg-gold" : "bg-ink/20"}`}
         >
           <span
             className={`absolute top-1 w-6 h-6 rounded-full bg-white transition ${
@@ -46,7 +46,7 @@ export default function SettingsForm({
             await toggleWhatsappNotify(next);
           }}
           className={`w-14 h-8 rounded-full relative transition ${
-            whatsapp ? "bg-aegean" : "bg-ink/20"
+            whatsapp ? "bg-gold" : "bg-ink/20"
           }`}
         >
           <span

@@ -39,7 +39,7 @@ export default function CheckoutPage() {
   if (lines.length === 0) {
     return (
       <div className="min-h-screen flex items-center justify-center px-6">
-        <p className="text-ink/60">{t.emptyCart}</p>
+        <p className="font-body italic text-ink/50">{t.emptyCart}</p>
       </div>
     );
   }
@@ -85,22 +85,24 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="min-h-screen px-4 pb-32 pt-6">
-      <h1 className="font-display font-bold text-xl mb-4">{t.checkout}</h1>
+    <div className="min-h-screen px-5 pb-32 pt-6">
+      <h1 className="font-display font-medium text-[28px] mb-4">{t.checkout}</h1>
 
-      <div className="flex flex-col gap-3 mb-6">
+      <div className="mb-6">
         {lines.map((line) => (
-          <div key={line.product_id} className="flex items-center justify-between bg-white rounded-xl p-3">
+          <div
+            key={line.product_id}
+            className="flex items-center justify-between py-3 border-b border-ink/12"
+          >
             <div>
-              <p className="font-semibold text-sm">
+              <p className="font-display text-[17px] font-semibold">
                 {line.quantity}× {lang === "tr" ? line.name_tr : line.name_en}
               </p>
-              <p className="text-xs text-ink/50">{line.unit_price * line.quantity} TL</p>
+              <p className="font-body text-[12px] italic text-ink/45">
+                {line.unit_price * line.quantity} ₺
+              </p>
             </div>
-            <button
-              onClick={() => remove(line.product_id)}
-              className="text-sm text-coral font-semibold"
-            >
+            <button onClick={() => remove(line.product_id)} className="font-body text-[13px] text-deep">
               {t.remove}
             </button>
           </div>
@@ -116,14 +118,14 @@ export default function CheckoutPage() {
       >
         <div className="grid grid-cols-2 gap-3">
           <input
-            className="rounded-xl border border-black/10 px-4 py-3 text-base"
+            className="font-body border border-ink/20 rounded px-4 py-3 text-[15px] bg-transparent"
             placeholder={t.firstName}
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
             required
           />
           <input
-            className="rounded-xl border border-black/10 px-4 py-3 text-base"
+            className="font-body border border-ink/20 rounded px-4 py-3 text-[15px] bg-transparent"
             placeholder={t.lastName}
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
@@ -132,7 +134,7 @@ export default function CheckoutPage() {
         </div>
 
         <input
-          className="rounded-xl border border-black/10 px-4 py-3 text-base"
+          className="font-body border border-ink/20 rounded px-4 py-3 text-[15px] bg-transparent"
           placeholder={t.phoneOptional}
           type="tel"
           value={phone}
@@ -140,7 +142,7 @@ export default function CheckoutPage() {
         />
 
         <select
-          className="rounded-xl border border-black/10 px-4 py-3 text-base bg-white"
+          className="font-body border border-ink/20 rounded px-4 py-3 text-[15px] bg-paper"
           value={locationCode}
           onChange={(e) => setLocationCode(e.target.value)}
         >
@@ -154,7 +156,7 @@ export default function CheckoutPage() {
 
         {locationCode === "daire" && (
           <input
-            className="rounded-xl border border-black/10 px-4 py-3 text-base"
+            className="font-body border border-ink/20 rounded px-4 py-3 text-[15px] bg-transparent"
             placeholder={t.daireNumber}
             value={locationNumber}
             onChange={(e) => setLocationNumber(e.target.value)}
@@ -162,21 +164,21 @@ export default function CheckoutPage() {
         )}
 
         <textarea
-          className="rounded-xl border border-black/10 px-4 py-3 text-base"
+          className="font-body italic border border-ink/20 rounded px-4 py-3 text-[15px] bg-transparent"
           placeholder={t.orderNote}
           value={note}
           onChange={(e) => setNote(e.target.value)}
           rows={2}
         />
 
-        {error && <p className="text-sm text-red-600 font-medium">{error}</p>}
+        {error && <p className="font-body text-[13px] text-red-700">{error}</p>}
 
         <button
           type="submit"
           disabled={submitting}
-          className="fixed bottom-4 left-4 right-4 bg-aegean text-white rounded-2xl py-4 font-semibold shadow-lg disabled:opacity-60"
+          className="fixed bottom-4 left-5 right-5 bg-paper border border-gold text-deep font-display text-[15px] tracking-[0.1em] uppercase rounded py-4 disabled:opacity-60"
         >
-          {submitting ? "..." : `${t.placeOrder} · ${total} TL`}
+          {submitting ? "..." : `${t.placeOrder} · ${total} ₺`}
         </button>
       </form>
     </div>

@@ -2,6 +2,7 @@
 
 import { useLanguage } from "@/context/LanguageContext";
 import { useCart } from "@/context/CartContext";
+import HatMark from "@/components/HatMark";
 
 interface MostLovedItem {
   product_id: string;
@@ -18,9 +19,12 @@ export default function MostLoved({ items }: { items: MostLovedItem[] }) {
   if (items.length === 0) return null;
 
   return (
-    <section className="mb-4">
-      <h2 className="font-display font-semibold text-lg mb-2 px-0.5">🔥 {t.mostLoved}</h2>
-      <div className="flex gap-3 overflow-x-auto pb-1 -mx-4 px-4">
+    <section className="pt-5">
+      <div className="flex items-center gap-2 mb-2">
+        <HatMark size={20} />
+        <h2 className="font-display font-medium text-[18px] tracking-[0.04em]">{t.mostLoved}</h2>
+      </div>
+      <div className="flex gap-5 overflow-x-auto pb-2 -mx-5 px-5">
         {items.map((item) => (
           <button
             key={item.product_id}
@@ -32,16 +36,16 @@ export default function MostLoved({ items }: { items: MostLovedItem[] }) {
                 unit_price: item.price
               })
             }
-            className="shrink-0 w-36 bg-white rounded-2xl p-3 shadow-sm text-left active:scale-95 transition"
+            className="shrink-0 w-40 border border-ink/15 rounded p-3 text-left"
           >
-            <div className="w-full h-20 rounded-xl bg-sand mb-2" />
-            <p className="text-sm font-semibold leading-tight line-clamp-2">
+            <p className="font-display text-[16px] font-semibold leading-snug">
               {lang === "tr" ? item.name_tr : item.name_en}
             </p>
-            <p className="text-coral text-sm font-semibold mt-1">{item.price} TL</p>
+            <p className="font-display text-[15px] text-deep tabular-nums mt-2">{item.price} ₺</p>
           </button>
         ))}
       </div>
+      <div className="h-px bg-gold/50 mt-4" />
     </section>
   );
 }

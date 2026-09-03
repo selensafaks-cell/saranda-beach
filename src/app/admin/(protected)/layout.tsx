@@ -14,11 +14,11 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   }
 
   return (
-    <div className="min-h-screen bg-sand pb-20">
-      <header className="flex items-center justify-between px-4 py-3 bg-horizon">
+    <div className="min-h-screen bg-paper pb-20">
+      <header className="flex items-center justify-between px-4 py-3 bg-ink">
         <span className="font-display font-bold text-white">S-Cafe Yönetim</span>
         <form action={logout}>
-          <button className="text-sm text-coral font-semibold">Çıkış</button>
+          <button className="text-sm text-deep font-semibold">Çıkış</button>
         </form>
       </header>
 

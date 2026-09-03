@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { Product } from "@/lib/types";
 import { useCart } from "@/context/CartContext";
 import { useLanguage } from "@/context/LanguageContext";
@@ -23,39 +22,32 @@ export default function ProductCard({ product }: { product: Product }) {
   }
 
   return (
-    <div className="flex gap-3 items-center bg-white rounded-2xl p-3 shadow-sm border border-black/5">
-      {product.image_url ? (
-        <div className="relative w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-sand">
-          <Image src={product.image_url} alt={name} fill sizes="80px" className="object-cover" />
-        </div>
-      ) : (
-        <div className="w-20 h-20 shrink-0 rounded-xl bg-sand" />
-      )}
-
+    <button
+      onClick={handleAdd}
+      disabled={product.sold_out}
+      className="w-full flex items-start justify-between gap-4 py-4 border-b border-ink/12 text-left disabled:opacity-50"
+    >
       <div className="flex-1 min-w-0">
-        <h3 className="font-display font-semibold text-base leading-tight truncate">{name}</h3>
+        <p className="font-display text-[19px] font-semibold leading-snug">{name}</p>
         {description && (
-          <p className="text-sm text-ink/60 line-clamp-2 mt-0.5">{description}</p>
+          <p className="font-body text-[12px] italic text-ink/50 mt-0.5">{description}</p>
         )}
         {product.includes_fries && (
-          <span className="inline-block text-[11px] uppercase tracking-wide text-olive font-semibold mt-1">
-            {t.friesIncluded}
-          </span>
+          <p className="font-body text-[11px] italic text-ink/40 mt-0.5">{t.friesIncluded}</p>
         )}
-        <div className="flex items-center justify-between mt-2">
-          <span className="font-semibold text-coral">{product.price} TL</span>
-          {product.sold_out ? (
-            <span className="text-sm font-semibold text-ink/40">{t.soldOut}</span>
-          ) : (
-            <button
-              onClick={handleAdd}
-              className="bg-aegean text-white text-sm font-semibold rounded-full px-4 py-2 min-h-[40px] active:scale-95 transition"
-            >
-              + {t.add}
-            </button>
-          )}
-        </div>
       </div>
-    </div>
+      <div className="shrink-0 text-right pt-0.5 flex items-center gap-2">
+        {product.sold_out ? (
+          <span className="font-body text-[12px] italic text-ink/40">{t.soldOut}</span>
+        ) : (
+          <>
+            <span className="font-display text-[18px] text-deep tabular-nums">{product.price} ₺</span>
+            <span className="w-6 h-6 flex items-center justify-center border border-gold rounded-full text-gold text-[14px] leading-none">
+              +
+            </span>
+          </>
+        )}
+      </div>
+    </button>
   );
 }

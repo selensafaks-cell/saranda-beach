@@ -84,7 +84,7 @@ export default function MenuEditor({
               setShowAddForm(false);
             }}
             className={`px-3 py-2 rounded-full text-sm font-semibold whitespace-nowrap ${
-              activeCategory === c.id ? "bg-coral text-white" : "bg-white text-ink/70"
+              activeCategory === c.id ? "bg-deep text-white" : "bg-white text-ink/70"
             }`}
           >
             {c.name_tr}
@@ -94,7 +94,7 @@ export default function MenuEditor({
 
       <button
         onClick={() => setShowAddForm((v) => !v)}
-        className="w-full mt-3 border-2 border-dashed border-aegean/40 text-aegean rounded-xl py-3 font-semibold text-sm"
+        className="w-full mt-3 border-2 border-dashed border-gold/40 text-deep rounded-xl py-3 font-semibold text-sm"
       >
         {showAddForm ? "İptal" : "+ Yeni Ürün Ekle"}
       </button>
@@ -123,7 +123,7 @@ export default function MenuEditor({
           <button
             onClick={handleAdd}
             disabled={adding || !newNameTr.trim() || !newPrice.trim()}
-            className="bg-aegean text-white rounded-lg py-2.5 font-semibold text-sm disabled:opacity-50"
+            className="bg-gold text-white rounded-lg py-2.5 font-semibold text-sm disabled:opacity-50"
           >
             {adding ? "Ekleniyor..." : "Ürünü Kaydet"}
           </button>
@@ -164,7 +164,7 @@ export default function MenuEditor({
                   if (!product.id.startsWith("temp-")) await toggleSoldOut(product.id, next);
                 }}
                 className={`flex-1 rounded-lg py-2 text-sm font-semibold ${
-                  product.sold_out ? "bg-coral text-white" : "bg-sand text-ink/70"
+                  product.sold_out ? "bg-deep text-white" : "bg-paper text-ink/70"
                 }`}
               >
                 {product.sold_out ? "Tükendi ✓" : "Tükendi olarak işaretle"}
@@ -176,7 +176,7 @@ export default function MenuEditor({
                   if (!product.id.startsWith("temp-")) await toggleActive(product.id, next);
                 }}
                 className={`flex-1 rounded-lg py-2 text-sm font-semibold ${
-                  product.active ? "bg-sand text-ink/70" : "bg-horizon text-white"
+                  product.active ? "bg-paper text-ink/70" : "bg-ink text-white"
                 }`}
               >
                 {product.active ? "Menüde Göster" : "Gizli"}
@@ -184,7 +184,7 @@ export default function MenuEditor({
             </div>
             <button
               onClick={() => handleDelete(product)}
-              className="w-full mt-2 text-xs font-semibold text-coral/80 py-1.5"
+              className="w-full mt-2 text-xs font-semibold text-deep/80 py-1.5"
             >
               Ürünü Tamamen Sil
             </button>

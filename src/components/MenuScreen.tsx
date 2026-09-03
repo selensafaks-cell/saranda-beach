@@ -9,6 +9,7 @@ import ProductCard from "@/components/ProductCard";
 import MostLoved from "@/components/MostLoved";
 import CartBar from "@/components/CartBar";
 import QrLocationCapture from "@/components/QrLocationCapture";
+import HatMark from "@/components/HatMark";
 
 interface MostLovedItem {
   product_id: string;
@@ -56,63 +57,39 @@ export default function MenuScreen({
     <div className="min-h-screen pb-32">
       <QrLocationCapture />
 
-      {/* Hero banner: the shoreline is the site's one signature shape - used
-          here and on the cart bar only, nowhere else. */}
-      <div className="relative bg-horizon">
-        <div className="flex items-center justify-between px-4 pt-5 pb-8">
-          <div className="flex items-center gap-2.5">
-            <svg width="34" height="34" viewBox="0 0 60 60" fill="none">
-              <path
-                d="M40 16 C40 10, 28 10, 25 15 C22 20, 32 22, 36 25 C41 28, 42 33, 34 38 C27 42, 16 40, 13 34"
-                stroke="#FF6B4A"
-                strokeWidth="4.5"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path
-                d="M13 34 C10 40, 10 46, 20 49 C30 52, 42 50, 46 44"
-                stroke="#FF6B4A"
-                strokeWidth="4.5"
-                strokeLinecap="round"
-                fill="none"
-              />
-              <path d="M46 41 C50 41, 51 36, 46 35" stroke="#FF6B4A" strokeWidth="3.5" strokeLinecap="round" fill="none" />
-            </svg>
-            <div>
-              <h1 className="font-display font-semibold text-xl text-white leading-none">S-Cafe</h1>
-              <p className="text-[11px] text-white/60 mt-1">{t.cta}</p>
-            </div>
+      <header className="sticky top-0 z-30 bg-paper/95 backdrop-blur">
+        <div className="flex items-center gap-3 px-5 pt-4 pb-3 border-b border-ink/15">
+          <HatMark size={34} />
+          <div className="flex-1">
+            <h1 className="font-display font-medium text-2xl tracking-[0.14em] leading-none">S‑CAFE</h1>
+            <p className="font-body text-[10px] tracking-[0.16em] uppercase text-ink/50 mt-1">{t.cta}</p>
           </div>
           <LanguageSwitch />
         </div>
-        <svg
-          className="absolute bottom-0 left-0 w-full"
-          height="20"
-          viewBox="0 0 400 20"
-          preserveAspectRatio="none"
-        >
-          <path
-            d="M0,0 L0,10 Q25,20 50,10 T100,10 T150,10 T200,10 T250,10 T300,10 T350,10 T400,10 L400,0 Z"
-            fill="#FAF6EC"
-          />
-        </svg>
-      </div>
+        <CategoryNav categories={categories} activeId={activeId} onSelect={handleSelect} />
+      </header>
 
-      <main className="px-4 -mt-1">
+      <main className="px-5">
         {!orderingOpen && (
-          <div className="bg-coral/10 border border-coral/30 text-coral text-sm font-medium rounded-xl px-4 py-3 mb-4 mt-3">
+          <div className="border border-gold/50 bg-gold/5 text-deep text-sm font-body italic px-4 py-3 mt-4">
             {lang === "tr" ? closedMessageTr : closedMessageEn}
           </div>
         )}
 
         <MostLoved items={mostLoved} />
 
-        <CategoryNav categories={categories} activeId={activeId} onSelect={handleSelect} />
-
-        <div id={`cat-${activeId}`} className="flex flex-col gap-3 mt-3">
-          {visibleProducts.map((p) => (
-            <ProductCard key={p.id} product={p} />
-          ))}
+        <div id={`cat-${activeId}`}>
+          <h2 className="font-display font-normal text-[28px] pt-6 pb-1">
+            {lang === "tr"
+              ? categories.find((c) => c.id === activeId)?.name_tr
+              : categories.find((c) => c.id === activeId)?.name_en}
+          </h2>
+          <div className="h-px bg-gold/50 mb-2" />
+          <div>
+            {visibleProducts.map((p) => (
+              <ProductCard key={p.id} product={p} />
+            ))}
+          </div>
         </div>
       </main>
 

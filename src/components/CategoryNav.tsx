@@ -15,23 +15,21 @@ export default function CategoryNav({
   const { lang } = useLanguage();
 
   return (
-    <div className="sticky top-0 z-20 bg-sand/95 backdrop-blur pt-2 pb-3 -mx-4 px-4 overflow-x-auto">
-      <div className="flex gap-2 w-max">
-        {categories.map((c) => {
-          const active = c.id === activeId;
-          return (
-            <button
-              key={c.id}
-              onClick={() => onSelect(c.id)}
-              className={`px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition min-h-[40px] ${
-                active ? "bg-coral text-white" : "bg-white text-ink/70"
-              }`}
-            >
-              {lang === "tr" ? c.name_tr : c.name_en}
-            </button>
-          );
-        })}
-      </div>
+    <div className="flex gap-6 px-5 py-3 overflow-x-auto border-b border-ink/15">
+      {categories.map((c) => {
+        const active = c.id === activeId;
+        return (
+          <button
+            key={c.id}
+            onClick={() => onSelect(c.id)}
+            className={`font-display text-[15px] tracking-[0.06em] uppercase whitespace-nowrap pb-1 border-b-[1.5px] transition-colors ${
+              active ? "text-deep border-gold" : "text-ink/45 border-transparent"
+            }`}
+          >
+            {lang === "tr" ? c.name_tr : c.name_en}
+          </button>
+        );
+      })}
     </div>
   );
 }

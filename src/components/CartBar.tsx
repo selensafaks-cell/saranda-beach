@@ -12,22 +12,19 @@ export default function CartBar() {
   if (itemCount === 0) return null;
 
   return (
-    <button
-      onClick={() => router.push("/checkout")}
-      className="fixed bottom-4 left-4 right-4 z-30 active:scale-[0.98] transition"
-    >
-      <svg width="100%" height="14" viewBox="0 0 400 14" preserveAspectRatio="none" className="block">
-        <path
-          d="M0,14 L0,4 Q25,-6 50,4 T100,4 T150,4 T200,4 T250,4 T300,4 T350,4 T400,4 L400,14 Z"
-          fill="#0B3B4A"
-        />
-      </svg>
-      <div className="bg-horizon text-white rounded-b-2xl py-4 px-5 shadow-lg flex items-center justify-between -mt-px">
-        <span className="font-semibold">
-          {t.cart} · {itemCount} {t.items}
-        </span>
-        <span className="font-bold text-coral">{total} TL</span>
+    <div className="fixed bottom-0 left-0 right-0 z-30 bg-paper border-t border-ink/15 px-5 py-3.5 flex items-center gap-4">
+      <div className="flex-1">
+        <p className="font-body text-[10px] tracking-[0.14em] uppercase text-ink/50">{t.cart}</p>
+        <p className="font-display text-[19px] tabular-nums">
+          {itemCount} · {total} ₺
+        </p>
       </div>
-    </button>
+      <button
+        onClick={() => router.push("/checkout")}
+        className="font-display text-[15px] tracking-[0.1em] uppercase text-gold border border-gold rounded px-6 py-3"
+      >
+        {t.viewCart}
+      </button>
+    </div>
   );
 }
