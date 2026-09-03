@@ -42,7 +42,11 @@ export default function MenuScreen({
 
   useEffect(() => {
     const supabase = createClient();
-    supabase.auth.getUser().then(({ data: { user } }) => setLoggedIn(!!user));
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (!user) return;
+      const { data: profile } = await supabase.from("customers").select("id").eq("id", user.id).single();
+      setLoggedIn(!!profile);
+    });
   }, []);
 
   useEffect(() => {

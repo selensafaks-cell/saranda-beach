@@ -76,6 +76,20 @@ export async function submitOrder(input: SubmitOrderInput) {
     });
   }
 
+  // Defense in depth: never trust customerId from the client blindly - if
+  // it doesn't correspond to a real customers row (e.g. a staff session
+  // leaking through), silently treat this as a guest order instead of
+  // failing the whole checkout.
+  let verifiedCustomerId: string | null = null;
+  if (input.customerId) {
+    const { data: customerRow } = await supabase
+      .from("customers")
+      .select("id")
+      .eq("id", input.customerId)
+      .single();
+    verifiedCustomerId = customerRow?.id ?? null;
+  }
+
   // Resolve location id + label from code, if provided
   let locationId: string | null = null;
   let locationLabel = "";
@@ -98,7 +112,7 @@ export async function submitOrder(input: SubmitOrderInput) {
       customer_first_name: input.firstName.trim(),
       customer_last_name: input.lastName.trim(),
       customer_phone: input.phone?.trim() || null,
-      customer_id: input.customerId || null,
+      customer_id: verifiedCustomerId,
       location_id: locationId,
       location_number: input.locationNumber?.trim() || null,
       status: "received",

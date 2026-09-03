@@ -43,13 +43,16 @@ export default function CheckoutPage() {
     const supabase = createClient();
     supabase.auth.getUser().then(async ({ data: { user } }) => {
       if (!user) return;
-      setCustomerId(user.id);
+      // A staff member testing the site while logged into /admin shares the
+      // same auth session - only treat this as a customer checkout if a
+      // matching customers profile actually exists, never assume.
       const { data: profile } = await supabase
         .from("customers")
         .select("first_name, last_name")
         .eq("id", user.id)
         .single();
       if (profile) {
+        setCustomerId(user.id);
         setFirstName(profile.first_name ?? "");
         setLastName(profile.last_name ?? "");
       }
