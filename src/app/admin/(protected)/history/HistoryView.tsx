@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { OrderStatus } from "@/lib/types";
-import { deleteOrder } from "@/lib/actions/orders";
 
 interface OrderRow {
   id: string;
@@ -64,76 +63,23 @@ function downloadCsv(orders: OrderRow[]) {
   URL.revokeObjectURL(url);
 }
 
-export default function HistoryView({ orders: initialOrders }: { orders: OrderRow[] }) {
-  const [orders, setOrders] = useState(initialOrders);
+export default function HistoryView({ orders }: { orders: OrderRow[] }) {
   const [filter, setFilter] = useState<"all" | OrderStatus>("all");
-  const [selected, setSelected] = useState<Set<string>>(new Set());
-  const [selecting, setSelecting] = useState(false);
 
   const filtered = filter === "all" ? orders : orders.filter((o) => o.status === filter);
   const totalSum = filtered.reduce((sum, o) => sum + o.total, 0);
-
-  function toggleSelected(id: string) {
-    setSelected((prev) => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
-      return next;
-    });
-  }
-
-  async function handleDeleteOne(order: OrderRow) {
-    const confirmed = window.confirm(
-      `#${order.public_order_number} numaralı siparişi tamamen silmek istediğine emin misin? Bu işlem geri alınamaz.`
-    );
-    if (!confirmed) return;
-    setOrders((prev) => prev.filter((o) => o.id !== order.id));
-    await deleteOrder(order.id);
-  }
-
-  async function handleDeleteSelected() {
-    const confirmed = window.confirm(
-      `${selected.size} siparişi tamamen silmek istediğine emin misin? Bu işlem geri alınamaz.`
-    );
-    if (!confirmed) return;
-    const ids = Array.from(selected);
-    setOrders((prev) => prev.filter((o) => !selected.has(o.id)));
-    setSelected(new Set());
-    setSelecting(false);
-    await Promise.all(ids.map((id) => deleteOrder(id)));
-  }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-3">
         <h1 className="font-display font-semibold text-lg">Sipariş Geçmişi</h1>
-        <div className="flex gap-2">
-          <button
-            onClick={() => {
-              setSelecting((v) => !v);
-              setSelected(new Set());
-            }}
-            className="bg-white border border-ink/20 text-ink/70 text-sm font-semibold rounded-lg px-3 py-2"
-          >
-            {selecting ? "İptal" : "Seç"}
-          </button>
-          <button
-            onClick={() => downloadCsv(filtered)}
-            className="bg-wine text-white text-sm font-semibold rounded-lg px-3 py-2"
-          >
-            CSV İndir
-          </button>
-        </div>
-      </div>
-
-      {selecting && selected.size > 0 && (
         <button
-          onClick={handleDeleteSelected}
-          className="w-full mb-3 bg-wine text-white text-sm font-semibold rounded-lg py-2.5"
+          onClick={() => downloadCsv(filtered)}
+          className="bg-wine text-white text-sm font-semibold rounded-lg px-3 py-2"
         >
-          {selected.size} Siparişi Sil
+          CSV İndir
         </button>
-      )}
+      </div>
 
       <div className="flex gap-2 overflow-x-auto pb-3 -mx-4 px-4">
         {(["all", "delivered", "cancelled", "received", "accepted", "preparing", "on_the_way"] as const).map(
@@ -157,44 +103,21 @@ export default function HistoryView({ orders: initialOrders }: { orders: OrderRo
 
       <div className="flex flex-col gap-2">
         {filtered.map((order) => (
-          <div
-            key={order.id}
-            className={`bg-white rounded-xl p-3 shadow-sm ${selecting ? "flex items-start gap-2" : ""}`}
-          >
-            {selecting && (
-              <input
-                type="checkbox"
-                checked={selected.has(order.id)}
-                onChange={() => toggleSelected(order.id)}
-                className="mt-1 w-4 h-4 shrink-0"
-              />
-            )}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center justify-between">
-                <p className="font-semibold text-sm">
-                  #{order.public_order_number} — {order.customer_first_name} {order.customer_last_name}
-                </p>
-                <div className="flex items-center gap-2 shrink-0">
-                  <p className="text-sm font-semibold text-deep">{order.total} TL</p>
-                  {!selecting && (
-                    <button
-                      onClick={() => handleDeleteOne(order)}
-                      className="text-xs font-semibold text-wine/70 underline"
-                    >
-                      Sil
-                    </button>
-                  )}
-                </div>
-              </div>
-              <p className="text-xs text-ink/50 mt-0.5">
-                {new Date(order.created_at).toLocaleString("tr-TR")} · {STATUS_LABEL[order.status]}
-                {order.locations?.[0]?.name_tr ? ` · ${order.locations[0].name_tr}` : ""}
-                {order.location_number ? ` ${order.location_number}` : ""}
+          <div key={order.id} className="bg-white rounded-xl p-3 shadow-sm">
+            <div className="flex items-center justify-between">
+              <p className="font-semibold text-sm">
+                #{order.public_order_number} — {order.customer_first_name} {order.customer_last_name}
               </p>
-              <p className="text-xs text-ink/60 mt-1">
-                {order.order_items.map((i) => `${i.quantity}× ${i.name_tr}`).join(", ")}
-              </p>
+              <p className="text-sm font-semibold text-deep">{order.total} TL</p>
             </div>
+            <p className="text-xs text-ink/50 mt-0.5">
+              {new Date(order.created_at).toLocaleString("tr-TR")} · {STATUS_LABEL[order.status]}
+              {order.locations?.[0]?.name_tr ? ` · ${order.locations[0].name_tr}` : ""}
+              {order.location_number ? ` ${order.location_number}` : ""}
+            </p>
+            <p className="text-xs text-ink/60 mt-1">
+              {order.order_items.map((i) => `${i.quantity}× ${i.name_tr}`).join(", ")}
+            </p>
           </div>
         ))}
 
