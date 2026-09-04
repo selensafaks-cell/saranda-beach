@@ -110,7 +110,10 @@ export default function CheckoutPage() {
 
   return (
     <div className="min-h-screen px-5 pb-32 pt-6">
-      <h1 className="font-display font-medium text-[28px] mb-1">{t.checkout}</h1>
+      <Link href="/" className="font-body text-[13px] text-deep underline">
+        ← {lang === "tr" ? "Menüye Dön" : "Back to Menu"}
+      </Link>
+      <h1 className="font-display font-medium text-[28px] mb-1 mt-3">{t.checkout}</h1>
       {!customerId && (
         <p className="font-body text-[12px] italic text-ink/45 mb-4">
           <Link href="/account/login" className="text-deep underline">
