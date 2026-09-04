@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { customerSignOut, joinHousehold } from "@/lib/actions/customerAuth";
+import { useCart } from "@/context/CartContext";
 import { OrderStatus } from "@/lib/types";
 
 interface OrderRow {
@@ -32,6 +33,9 @@ export default function AccountPage() {
   const [daireInput, setDaireInput] = useState("");
   const [joining, setJoining] = useState(false);
   const [joinMessage, setJoinMessage] = useState<string | null>(null);
+  const [reordering, setReordering] = useState(false);
+  const [reorderMessage, setReorderMessage] = useState<string | null>(null);
+  const { addItem } = useCart();
 
   useEffect(() => {
     const supabase = createClient();
@@ -73,6 +77,61 @@ export default function AccountPage() {
       return;
     }
     setJoinMessage("Daireye bağlandın ✓");
+  }
+
+  async function handleReorder() {
+    const lastOrder = orders.find((o) => o.status !== "cancelled");
+    if (!lastOrder) return;
+    setReordering(true);
+    setReorderMessage(null);
+
+    const supabase = createClient();
+    const { data: items } = await supabase
+      .from("order_items")
+      .select("product_id, quantity, name_tr")
+      .eq("order_id", lastOrder.id);
+
+    if (!items || items.length === 0) {
+      setReordering(false);
+      setReorderMessage("Bu siparişin ürünleri bulunamadı.");
+      return;
+    }
+
+    const productIds = items.map((i) => i.product_id).filter(Boolean);
+    const { data: products } = await supabase
+      .from("products")
+      .select("id, name_tr, name_en, price, active, sold_out")
+      .in("id", productIds);
+
+    let addedCount = 0;
+    let skippedCount = 0;
+    for (const item of items) {
+      const product = products?.find((p) => p.id === item.product_id);
+      if (!product || !product.active || product.sold_out) {
+        skippedCount++;
+        continue;
+      }
+      addItem(
+        {
+          product_id: product.id,
+          name_tr: product.name_tr,
+          name_en: product.name_en,
+          unit_price: product.price
+        },
+        item.quantity
+      );
+      addedCount++;
+    }
+
+    setReordering(false);
+    if (addedCount === 0) {
+      setReorderMessage("Bu siparişteki ürünlerin hiçbiri artık mevcut değil.");
+      return;
+    }
+    if (skippedCount > 0) {
+      setReorderMessage(`${skippedCount} ürün artık mevcut değil, sepete eklenmedi. Sepete yönlendiriliyorsun...`);
+    }
+    setTimeout(() => router.push("/checkout"), skippedCount > 0 ? 1400 : 300);
   }
 
   if (loading) {
@@ -128,6 +187,21 @@ export default function AccountPage() {
         </div>
         {joinMessage && <p className="font-body text-[12px] text-deep mt-2">{joinMessage}</p>}
       </div>
+
+      {orders.some((o) => o.status !== "cancelled") && (
+        <div className="mb-6">
+          <button
+            onClick={handleReorder}
+            disabled={reordering}
+            className="w-full border border-wine text-wine font-display text-[15px] tracking-[0.05em] uppercase rounded py-3 disabled:opacity-50"
+          >
+            {reordering ? "..." : "Son Siparişini Tekrarla"}
+          </button>
+          {reorderMessage && (
+            <p className="font-body text-[12px] text-deep mt-2 text-center">{reorderMessage}</p>
+          )}
+        </div>
+      )}
 
       <h2 className="font-display text-[18px] mb-2">Siparişlerim</h2>
       <div className="flex flex-col">

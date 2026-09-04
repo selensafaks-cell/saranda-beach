@@ -30,7 +30,7 @@ export default function AccountLoginPage() {
         setError("E-posta veya şifre yanlış.");
         return;
       }
-      router.push("/account");
+      router.push("/");
       return;
     }
 
@@ -46,7 +46,7 @@ export default function AccountLoginPage() {
         setError(result.error ?? "Bir hata oluştu, tekrar dene.");
         return;
       }
-      router.push("/account");
+      router.push("/");
       return;
     }
 

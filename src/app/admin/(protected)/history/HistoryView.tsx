@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import * as XLSX from "xlsx";
 import { OrderStatus } from "@/lib/types";
 import { deleteOrder } from "@/lib/actions/orders";
 
@@ -28,40 +29,72 @@ const STATUS_LABEL: Record<OrderStatus, string> = {
   cancelled: "İptal Edildi"
 };
 
-function toCsv(orders: OrderRow[]): string {
-  const header = ["Sipariş No", "Tarih", "Saat", "Ad Soyad", "Telefon", "Konum", "Ürünler", "Not", "Durum", "Toplam TL"];
-  const rows = orders.map((o) => {
-    const date = new Date(o.created_at);
-    const items = o.order_items.map((i) => `${i.quantity}x ${i.name_tr}`).join(" | ");
-    const location = [o.locations?.[0]?.name_tr, o.location_number].filter(Boolean).join(" ");
-    return [
-      o.public_order_number,
-      date.toLocaleDateString("tr-TR"),
-      date.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }),
-      `${o.customer_first_name} ${o.customer_last_name}`,
-      o.customer_phone ?? "",
-      location,
-      items,
-      o.note ?? "",
-      STATUS_LABEL[o.status],
-      o.total
-    ]
-      .map((field) => `"${String(field).replace(/"/g, '""')}"`)
-      .join(",");
+function downloadExcel(orders: OrderRow[]) {
+  // Sheet 1: grouped by person - so a repeat customer's total is visible
+  // at a glance instead of scrolling through scattered rows.
+  const byPerson = new Map<string, { count: number; total: number }>();
+  for (const o of orders) {
+    const name = `${o.customer_first_name} ${o.customer_last_name}`.trim() || "İsimsiz";
+    const existing = byPerson.get(name) ?? { count: 0, total: 0 };
+    existing.count += 1;
+    existing.total += o.total;
+    byPerson.set(name, existing);
+  }
+  const summaryRows = Array.from(byPerson.entries())
+    .sort((a, b) => b[1].total - a[1].total)
+    .map(([name, { count, total }]) => ({
+      "Ad Soyad": name,
+      "Sipariş Sayısı": count,
+      "Toplam TL": total
+    }));
+
+  // Sheet 2: full detail, sorted by person so the same customer's orders
+  // sit together (segmented) instead of pure chronological order.
+  const sorted = [...orders].sort((a, b) => {
+    const nameA = `${a.customer_first_name} ${a.customer_last_name}`;
+    const nameB = `${b.customer_first_name} ${b.customer_last_name}`;
+    if (nameA !== nameB) return nameA.localeCompare(nameB, "tr");
+    return new Date(a.created_at).getTime() - new Date(b.created_at).getTime();
   });
-  return [header.join(","), ...rows].join("\n");
+  const detailRows = sorted.map((o) => {
+    const date = new Date(o.created_at);
+    const items = o.order_items.map((i) => `${i.quantity}x ${i.name_tr}`).join(", ");
+    const location = [o.locations?.[0]?.name_tr, o.location_number].filter(Boolean).join(" ");
+    return {
+      "Sipariş No": o.public_order_number,
+      "Ad Soyad": `${o.customer_first_name} ${o.customer_last_name}`,
+      Tarih: date.toLocaleDateString("tr-TR"),
+      Saat: date.toLocaleTimeString("tr-TR", { hour: "2-digit", minute: "2-digit" }),
+      Telefon: o.customer_phone ?? "",
+      Konum: location,
+      Ürünler: items,
+      Not: o.note ?? "",
+      Durum: STATUS_LABEL[o.status],
+      "Toplam TL": o.total
+    };
+  });
+
+  const workbook = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(summaryRows), "Özet");
+  XLSX.utils.book_append_sheet(workbook, XLSX.utils.json_to_sheet(detailRows), "Tüm Siparişler");
+
+  const today = new Date().toISOString().slice(0, 10);
+  XLSX.writeFile(workbook, `siparisler-${today}.xlsx`);
 }
 
-function downloadCsv(orders: OrderRow[]) {
-  const csv = toCsv(orders);
-  const blob = new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8;" });
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  const today = new Date().toISOString().slice(0, 10);
-  a.href = url;
-  a.download = `siparisler-${today}.csv`;
-  a.click();
-  URL.revokeObjectURL(url);
+function computeBestsellers(orders: OrderRow[], days: number) {
+  const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
+  const counts = new Map<string, number>();
+  for (const order of orders) {
+    if (order.status === "cancelled") continue;
+    if (new Date(order.created_at).getTime() < cutoff) continue;
+    for (const item of order.order_items) {
+      counts.set(item.name_tr, (counts.get(item.name_tr) ?? 0) + item.quantity);
+    }
+  }
+  return Array.from(counts.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5);
 }
 
 export default function HistoryView({ orders: initialOrders }: { orders: OrderRow[] }) {
@@ -69,6 +102,8 @@ export default function HistoryView({ orders: initialOrders }: { orders: OrderRo
   const [filter, setFilter] = useState<"all" | OrderStatus>("all");
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [selecting, setSelecting] = useState(false);
+
+  const bestsellers = computeBestsellers(orders, 7);
 
   const filtered = filter === "all" ? orders : orders.filter((o) => o.status === filter);
   const totalSum = filtered.reduce((sum, o) => sum + o.total, 0);
@@ -118,10 +153,10 @@ export default function HistoryView({ orders: initialOrders }: { orders: OrderRo
             {selecting ? "İptal" : "Seç"}
           </button>
           <button
-            onClick={() => downloadCsv(filtered)}
+            onClick={() => downloadExcel(filtered)}
             className="bg-wine text-white text-sm font-semibold rounded-lg px-3 py-2"
           >
-            CSV İndir
+            Excel İndir
           </button>
         </div>
       </div>
@@ -133,6 +168,22 @@ export default function HistoryView({ orders: initialOrders }: { orders: OrderRo
         >
           {selected.size} Siparişi Sil
         </button>
+      )}
+
+      {bestsellers.length > 0 && (
+        <div className="bg-white rounded-xl p-4 shadow-sm mb-4">
+          <p className="font-display font-semibold text-[16px] mb-2">🔥 Bu Hafta En Çok Satılanlar</p>
+          <div className="flex flex-col gap-1.5">
+            {bestsellers.map(([name, qty], i) => (
+              <div key={name} className="flex items-center justify-between text-sm">
+                <span className="text-ink/80">
+                  {i + 1}. {name}
+                </span>
+                <span className="font-semibold text-deep">{qty} adet</span>
+              </div>
+            ))}
+          </div>
+        </div>
       )}
 
       <div className="flex gap-2 overflow-x-auto pb-3 -mx-4 px-4">
