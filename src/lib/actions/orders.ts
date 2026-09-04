@@ -16,9 +16,21 @@ interface SubmitOrderInput {
   lines: { product_id: string; quantity: number; line_note?: string }[];
 }
 
+export async function cancelOrder(orderId: string) {
+  const supabase = createClient();
+  // Only allowed while status is still 'received' - once Turan starts
+  // preparing it, cancelling from the guest side stops making sense.
+  // Matches the RLS policy that only permits received -> cancelled.
+  const { error } = await supabase
+    .from("orders")
+    .update({ status: "cancelled" })
+    .eq("id", orderId)
+    .eq("status", "received");
+  if (error) return { error: error.message };
+  return { success: true };
+}
 export async function deleteOrder(orderId: string) {
   const supabase = createClient();
-  // order_items cascade-delete automatically when the order is removed
   const { error } = await supabase.from("orders").delete().eq("id", orderId);
   if (error) return { error: error.message };
   return { success: true };
