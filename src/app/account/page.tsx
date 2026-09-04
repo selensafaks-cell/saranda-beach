@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { customerSignOut, joinHousehold } from "@/lib/actions/customerAuth";
 import { OrderStatus } from "@/lib/types";
@@ -84,7 +85,10 @@ export default function AccountPage() {
 
   return (
     <div className="min-h-screen px-5 pt-8 pb-16 bg-paper">
-      <div className="flex items-center justify-between mb-1">
+      <Link href="/" className="font-body text-[13px] text-deep underline">
+        ← Menüye Dön
+      </Link>
+      <div className="flex items-center justify-between mb-1 mt-3">
         <h1 className="font-display font-medium text-[24px]">
           {profile ? `${profile.first_name} ${profile.last_name}` : "Hesabım"}
         </h1>

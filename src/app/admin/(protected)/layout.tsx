@@ -13,6 +13,19 @@ export default async function AdminLayout({ children }: { children: React.ReactN
     redirect("/admin/login");
   }
 
+  // Being logged in isn't enough - customer accounts share the same login
+  // system as staff. Only proceed if this user actually has a staff_users
+  // row; otherwise a regular guest account could reach the admin panel.
+  const { data: staffRow } = await supabase
+    .from("staff_users")
+    .select("id")
+    .eq("id", user.id)
+    .single();
+
+  if (!staffRow) {
+    redirect("/admin/login");
+  }
+
   return (
     <div className="min-h-screen bg-paper pb-20">
       <header className="flex items-center justify-between px-4 py-3 bg-ink">

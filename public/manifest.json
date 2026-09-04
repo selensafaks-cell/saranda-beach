@@ -2,7 +2,7 @@
   "name": "S-Cafe Yönetim",
   "short_name": "S-Cafe",
   "description": "S-Cafe sipariş yönetim paneli",
-  "start_url": "/admin/orders",
+  "start_url": "/",
   "display": "standalone",
   "background_color": "#F3F2F2",
   "theme_color": "#7A2530",
